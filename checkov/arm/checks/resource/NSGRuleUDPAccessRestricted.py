@@ -18,10 +18,12 @@ class NSGRuleUDPAccessRestricted(BaseResourceCheck):
     def scan_resource_conf(self, conf: Dict[str, Union[str, Dict[str, List[Dict[str, str] | Any]]]]) -> CheckResult:
         rule_confs = [conf.get("properties", {})]
         evaluated_key_prefix = ''
-        if isinstance(rule_confs[0],dict) and 'securityRules' in rule_confs[0]:
-            rule_confs = [rule_confs[0]['securityRules'][0]["properties"]]
-            self.evaluated_keys = ['securityRules']
-            evaluated_key_prefix = 'securityRules/'
+        if isinstance(rule_confs[0], dict):
+            securityRules = rule_confs[0].get('securityRules')
+            if isinstance(securityRules, list) and len(securityRules) > 0:
+                rule_confs = [securityRules[0].get('properties', {})]
+                self.evaluated_keys = ['securityRules']
+                evaluated_key_prefix = 'securityRules/'
         for rule_conf in rule_confs:
             if isinstance(rule_conf, dict):
                 protocol = rule_conf.get('protocol')
